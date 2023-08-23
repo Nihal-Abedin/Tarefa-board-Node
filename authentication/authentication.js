@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
 
 const createTokenAndSend = (user, res, statusCode) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_PRIVATE_SIG, {
@@ -68,7 +69,6 @@ exports.isAuthenticated = catchAsync(async (req, res, next) => {
     token,
     process.env.JWT_PRIVATE_SIG
   );
-  console.log(decodedToken);
   const user = await User.findById(decodedToken.id);
   if (!user) {
     return next(
