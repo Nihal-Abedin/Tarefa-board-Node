@@ -7,13 +7,20 @@ const cardSchema = new mongoose.Schema({
   },
   priority: {
     type: String,
-    enum: ["high", "medium", "lof"],
+    enum: ["high", "medium", "low"],
     default: "medium",
   },
   taskOf: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Task",
     required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+  endDate: {
+    type: Date,
   },
 });
 

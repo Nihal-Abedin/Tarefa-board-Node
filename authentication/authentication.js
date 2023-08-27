@@ -4,29 +4,29 @@ const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 
-const createTokenAndSend = (user, res, statusCode) => {
+const createTokenAndSend = (user, res, statusCode, message) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_PRIVATE_SIG, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 
-  // const cookieOptions = {
-  //   expires: new Date(
-  //     Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000
-  //   ),
-  //   httpOnly: true,
-  // };
-  // if (process.env.NODE_ENV === "production") {
-  //   cookieOptions.secure = true;
-  // }
-  // res.cookie("JWT_TOKEN", token, cookieOptions);
+  const cookieOptions = {
+    maxAge: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === "production") {
+    cookieOptions.secure = true;
+  }
+  res.cookie("TAREFA_TOKEN", token, cookieOptions);
   res.status(statusCode).json({
     status: statusCode,
-    message: "success",
+    message: message,
     token,
   });
 };
 
-exports.login = catchAsync(async (req, res) => {
+exports.login = catchAsync(async (req, res, next) => {
   if (!req.body.email || !req.body.password) {
     return next(new AppError("Please provide your credentials properly!", 400));
   }
@@ -41,14 +41,19 @@ exports.login = catchAsync(async (req, res) => {
     return next(new AppError("Email or password is incorrect!", 401));
   }
 
-  createTokenAndSend(user, res, 200);
+  createTokenAndSend(user, res, 200, "Login Successfull");
 });
 exports.signUp = catchAsync(async (req, res, next) => {
   if (!req.body.name || !req.body.email || !req.body.password) {
     return next(new AppError("Registration Failed", 400));
   }
   const newUser = await User.create(req.body);
-  createTokenAndSend(newUser, res, 201);
+  createTokenAndSend(
+    newUser,
+    res,
+    201,
+    "Signup Successfull, You are logged in!"
+  );
 });
 
 exports.isAuthenticated = catchAsync(async (req, res, next) => {
