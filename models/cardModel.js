@@ -22,8 +22,17 @@ const cardSchema = new mongoose.Schema({
   endDate: {
     type: Date,
   },
+  status: {
+    type: String,
+    enum: ["in progress", "done", "not started"],
+    default: "not started",
+  },
 });
 
 const cardModel = mongoose.model("Card", cardSchema);
-
+// cardModel
+//   .updateMany({}, { $set: { status: "not started" } }, { runValidators: false })
+//   .then((result) => console.log("Documents updated:", result))
+//   .catch((err) => console.error("Error updating documents:", err))
+//   .finally(() => console.log("ERR"));
 module.exports = cardModel;

@@ -1,6 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Card = require("../models/cardModel");
+const { json } = require("express");
 
 exports.createCard = catchAsync(async (req, res, next) => {
   if (!req.body.name) {
@@ -14,12 +15,26 @@ exports.createCard = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getSingleCard = catchAsync(async (req, res, next) => {
+  const card = await Card.findById(req.params.cardId);
+
+  if (!card) {
+    return next(new AppError("No Card found", 400));
+  }
+
+  res.status(200).json({
+    message: "success",
+    status: 200,
+    data: card,
+  });
+});
+
 exports.updateCard = catchAsync(async (req, res, next) => {
   const card = await Card.findByIdAndUpdate(req.params.cardId, req.body, {
     new: true,
     runValidators: true,
   });
-  res.status(201).json({
+  res.status(200).json({
     message: "Task updated",
     data: card,
   });

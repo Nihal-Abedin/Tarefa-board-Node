@@ -7,7 +7,7 @@ exports.getTasks = catchAsync(async (req, res, next) => {
   const userTasks = await Task.find({ createdBy: req.user.id }).populate({
     path: "cards",
   });
-  res.status(201).json({
+  res.status(200).json({
     message: "success",
     totalTasks: userTasks.length,
     data: [...userTasks],

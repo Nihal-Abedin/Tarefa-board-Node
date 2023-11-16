@@ -14,6 +14,7 @@ const createTokenAndSend = (user, res, statusCode, message) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 60 * 60 * 1000
     ),
     httpOnly: true,
+    path:'/'
   };
   if (process.env.NODE_ENV === "production") {
     cookieOptions.secure = true;
